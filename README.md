@@ -6,8 +6,8 @@ This project is a simple way to display the progress of a lokalise project in a 
 ## Set-up
 Fork this repository and add the following secrets to your fork:
 
-- `LOKALISE_API_TOKEN`
-- `LOKALISE_PROJECT_ID`
+- `LOKALISE_API_TOKEN`: [API token](https://app.lokalise.com/profile#apitokens) for Lokalise. Read-only access is enough.
+- `LOKALISE_PROJECT_ID`: The ID of the Lokalise project you want to track. You can find it in the URL of the project page or in `More... -> Settings -> Project ID`.
 
 Then use the raw URL to `badge.json` in your fork repo to display the badge through [Endpoint Badge](https://shields.io/badges/endpoint-badge) support.
 
