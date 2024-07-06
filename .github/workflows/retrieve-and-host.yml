@@ -1,0 +1,38 @@
+name: Retrieve Project Info and Host on GitHub
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  retrieve-and-host:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Call API and get data
+      env:
+        API_TOKEN: ${{ secrets.LOKALISE_API_TOKEN }}
+        PROJECT_ID: ${{ secrets.LOKALISE_PROJECT_ID }}
+      run: |
+        curl -s --request GET --url https://api.lokalise.com/api2/projects/$PROJECT_ID --header 'accept: application/json' --header "X-Api-Token: $API_TOKEN"  | jq -f schema.jq > badge.json
+
+    - name: Commit and push data
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        
+        if [[ -z $(git status --porcelain) ]]; then
+          echo "No changes to commit."
+          exit 0
+        fi
+        
+        git add .
+        git commit -m "chore: update Lokalise project info"
+        git push
