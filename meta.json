@@ -1,0 +1,4 @@
+{
+    "languages": "\\( .statistics.languages | length ) UI languages",
+    "translated": "\\( .statistics.progress_total )% translated"
+}

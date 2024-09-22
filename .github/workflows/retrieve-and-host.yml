@@ -1,4 +1,4 @@
-name: Retrieve Project Info and Host on GitHub
+name: Retrieve Project Info and Host Badges on GitHub
 
 on:
   schedule:
@@ -11,19 +11,20 @@ on:
 jobs:
   retrieve-and-host:
     runs-on: ubuntu-latest
+    env:
+        API_TOKEN: ${{ secrets.LOKALISE_API_TOKEN }}
+        PROJECT_ID: ${{ secrets.LOKALISE_PROJECT_ID }}
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Call API and get data
-      env:
-        API_TOKEN: ${{ secrets.LOKALISE_API_TOKEN }}
-        PROJECT_ID: ${{ secrets.LOKALISE_PROJECT_ID }}
+    - name: Fetch project info & Render badges
       run: |
-        curl -s --request GET --url https://api.lokalise.com/api2/projects/$PROJECT_ID --header 'accept: application/json' --header "X-Api-Token: $API_TOKEN"  | jq -f schema.jq > badge.json
+        chmod +x ./render.sh
+        ./render.sh
 
-    - name: Commit and push data
+    - name: Commit & Push data
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -33,6 +34,7 @@ jobs:
           exit 0
         fi
         
-        git add .
-        git commit -m "chore: update Lokalise project info"
+        cd badges && \
+        git add . && \
+        git commit -m "chore: update Lokalise project info" && \
         git push
